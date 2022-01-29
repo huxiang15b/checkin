@@ -2,7 +2,7 @@
  *
  * @description 腾讯视频好莱坞会员V力值签到，手机签到和领取任务及奖励。
  * @author BlueSkyClouds
- * @create_at 2021-01-10
+ * @create_at 2022-01-29
  */
 
 const $ = new Env('腾讯视频会员签到');
@@ -310,7 +310,7 @@ exports.main = () => new Promise(
     (resovle, reject) => refCookie()
         .then(params=>Promise.all([
             txVideoSignIn(params),
-            txVideoCheckin(params),
+            //txVideoCheckin(params),
             setTimeout(() => {txVideoDownTask1(params)},1000),
             setTimeout(() => {txVideoDownTask2(params)},2000),
             setTimeout(() => {txVideoDownTask3(params)},3000),
