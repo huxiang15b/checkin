@@ -11,8 +11,8 @@ username = ""
 password = ""
 
 if(username == "" or password == ""):
-    username = input("账号：")
-    password = input("密码：")
+    username = '18110382137'
+    password = 'Hu+18919771963'
 
 def main():
     login(username, password)
