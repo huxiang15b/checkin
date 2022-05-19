@@ -144,6 +144,7 @@ function txVideoSignIn(headers) {
                 notice += "腾讯视频会员签到：签到失败-Cookie失效 ‼️‼️"+ "\n"
                 console.log("腾讯视频会员签到：签到失败, Cookie失效 ‼️‼️")
             } else if (data.match(/checkin_score/)) {
+                console.log(data)
                 msg = data.match(/checkin_score": (.+?),"msg/)[1]
                 //通过分数判断是否重复签到
                 if(msg == '0'){
