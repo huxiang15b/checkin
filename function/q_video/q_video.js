@@ -2,7 +2,7 @@
  *
  * @description 腾讯视频好莱坞会员V力值签到，手机签到和领取任务及奖励。
  * @author BlueSkyClouds
- * @create_at 2022-01-29
+ * @create_at 2022-06-28
  */
 
 const $ = new Env('腾讯视频会员签到');
@@ -66,9 +66,9 @@ function getAuth(c = _cookie) {
     //适配微信登录
     if(_cookie){
         if (_cookie.includes("main_login=wx")) {
-            needParams = ["tvfe_boss_uuid","video_guid","video_platform","pgv_pvid","pgv_info","pgv_pvi","pgv_si","_qpsvr_localtk","RK","ptcz","ptui_loginuin","main_login","access_token","appid","openid","vuserid","vusession"]
+            needParams = ["tvfe_boss_uuid","video_guid","video_platform","pgv_pvid","pgv_info","pgv_pvi","_qpsvr_localtk","RK","ptcz","ptui_loginuin","main_login","access_token","appid","openid","vuserid","vusession"]
         } else if (_cookie.includes("main_login=qq")){
-            needParams = ["tvfe_boss_uuid","video_guid","video_platform","pgv_pvid","pgv_info","pgv_pvi","pgv_si","_qpsvr_localtk","RK","ptcz","ptui_loginuin","main_login","vqq_access_token","vqq_appid","vqq_openid","vqq_vuserid","vqq_vusession"]
+            needParams = ["tvfe_boss_uuid","video_guid","video_platform","pgv_pvid","pgv_info","pgv_pvi","_qpsvr_localtk","RK","ptcz","ptui_loginuin","main_login","vqq_access_token","vqq_appid","vqq_openid","vqq_vuserid","vqq_vusession"]
         } else {
             console.log("getAuth - 无法提取有效cookie参数")
         }
@@ -144,10 +144,9 @@ function txVideoSignIn(headers) {
                 notice += "腾讯视频会员签到：签到失败-Cookie失效 ‼️‼️"+ "\n"
                 console.log("腾讯视频会员签到：签到失败, Cookie失效 ‼️‼️")
             } else if (data.match(/checkin_score/)) {
-                console.log(data)
-                msg = data.match(/checkin_score": (.+?),"msg/)[1]
+                msg = data.match(/checkin_score":"(.*?)"/)[1]
                 //通过分数判断是否重复签到
-                if(msg == '0'){
+                if(msg === '0'){
                     console.log("腾讯视频会员手机端签到失败：重复签到 ‼️‼️")
                     notice += "腾讯视频会员手机端签到失败：重复签到 ‼️‼️" + "\n"
                 }else{
@@ -201,17 +200,13 @@ function txVideoDownTask1(headers) {
             $.log(error);
             console.log("腾讯视频会员签到", "下载任务签到请求 ‼️‼️", error)
         } else {
-            if (data.match(/已发过货/)) {
-                console.log("腾讯视频会员下载任务签到：签到失败, 请勿重复领取任务 ‼️‼️")
-                notice += "腾讯视频会员下载任务签到：签到失败, 请勿重复领取任务 ‼️‼️" + "\n"
-            } else if (data.match(/score/)) {
-                msg = data.match(/score":(.*?)}/)[1]
+            msg = data.match(/score":(.*?)}/)[1]
+            if (msg !== 0) {
+                console.log("腾讯视频会员下载任务签到：签到失败, 任务未完成 ‼️")
+                notice += "腾讯视频会员下载任务签到：签到失败, 任务未完成 ‼️\n"
+            } else{
                 console.log("腾讯视频会员下载任务签到：签到成功，签到分数：" + msg + "分 🎉")
                 notice += "腾讯视频会员下载任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
-            } else {
-                //console.log("腾讯视频会员下载任务签到", "", "签到失败, 任务未完成 ‼️‼️")
-                console.log("腾讯视频会员下载任务签到：", data)
-                notice += "腾讯视频会员下载任务签到：" + data.match(/msg":"(.*?)"/)[1] + "\n"
             }
         }
     })
@@ -226,17 +221,13 @@ function txVideoDownTask2(headers) {
             $.log(error);
             console.log("腾讯视频会员签到", "赠送任务签到请求 ‼️‼️", error)
         } else {
-            if (data.match(/已发过货/)) {
-                console.log("腾讯视频会员赠送任务签到：签到失败, 请勿重复领取任务 ‼️‼️")
-                notice += "腾讯视频会员赠送任务签到：签到失败, 请勿重复领取任务 ‼️‼️" + "\n"
-            } else if (data.match(/score/)) {
-                msg = data.match(/score":(.*?)}/)[1]
+            msg = data.match(/score":(.*?)}/)[1]
+            if (msg !== 0) {
+                console.log("腾讯视频会员赠送任务签到：签到失败, 任务未完成 ‼️")
+                notice += "腾讯视频会员赠送任务签到：签到失败, 任务未完成 ‼️\n"
+            } else{
                 console.log("腾讯视频会员赠送任务签到：签到成功，签到分数：" + msg + "分 🎉")
                 notice += "腾讯视频会员赠送任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
-            } else {
-                //console.log("腾讯视频会员赠送任务签到", "", "签到失败, 任务未完成 ‼️‼️")
-                console.log("腾讯视频会员赠送任务签到：", data)
-                notice += "腾讯视频会员赠送任务签到：" + data.match(/msg":"(.*?)"/)[1] + "\n"
             }
         }
     })
@@ -251,17 +242,13 @@ function txVideoDownTask3(headers) {
             $.log(error);
             console.log("腾讯视频会员签到", "弹幕任务签到请求 ‼️‼️", error)
         } else {
-            if (data.match(/已发过货/)) {
-                console.log("腾讯视频会员弹幕任务签到：签到失败, 请勿重复领取任务 ‼️‼️")
-                notice += "腾讯视频会员弹幕任务签到：签到失败, 请勿重复领取任务 ‼️‼️" + "\n"
-            } else if (data.match(/score/)) {
-                msg = data.match(/score":(.*?)}/)[1]
+            msg = data.match(/score":(.*?)}/)[1]
+            if (msg !== 0) {
+                console.log("腾讯视频会员弹幕任务签到：签到失败, 任务未完成 ‼️")
+                notice += "腾讯视频会员弹幕任务签到：签到失败, 任务未完成 ‼️\n"
+            } else {
                 console.log("腾讯视频会员弹幕任务签到：签到成功，签到分数：" + msg + "分 🎉")
                 notice += "腾讯视频会员弹幕任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
-            } else {
-                //console.log("腾讯视频会员弹幕任务签到", "", "签到失败, 任务未完成 ‼️‼️")
-                console.log("腾讯视频会员弹幕任务签到：", data)
-                notice += "腾讯视频会员弹幕任务签到：" + data.match(/msg":"(.*?)"/)[1] + "\n"
             }
         }
     })
@@ -276,17 +263,13 @@ function txVideoDownTask4(headers) {
             $.log(error);
             console.log("腾讯视频会员签到", "观看任务签到请求 ‼️‼️", error)
         } else {
-            if (data.match(/已发过货/)) {
-                console.log("腾讯视频会员观看任务签到：签到失败, 请勿重复领取任务 ‼️‼️")
-                notice += "腾讯视频会员观看任务签到：签到失败, 请勿重复领取任务 ‼️‼️" + "\n"
-            } else if (data.match(/score/)) {
-                msg = data.match(/score":(.*?)}/)[1]
+            msg = data.match(/score":(.*?)}/)[1]
+            if (msg !== 0) {
+                console.log("腾讯视频会员观看任务签到：签到失败, 任务未完成 ‼️")
+                notice += "腾讯视频会员观看任务签到：签到失败, 任务未完成 ‼️\n"
+            } else {
                 console.log("腾讯视频会员观看任务签到：签到成功，签到分数：" + msg + "分 🎉")
                 notice += "腾讯视频会员观看任务签到：签到成功，签到分数：" + msg + "分 🎉" + "\n"
-            } else {
-                //console.log("腾讯视频会员观看任务签到", "", "签到失败, 任务未完成 ‼️‼️")
-                console.log("腾讯视频会员观看任务签到：", data)
-                notice += "腾讯视频会员观看任务签到：" + data.match(/msg":"(.*?)"/)[1] + "\n"
             }
         }
     })
